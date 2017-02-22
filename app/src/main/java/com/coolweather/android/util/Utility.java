@@ -5,6 +5,9 @@ import android.text.TextUtils;
 import com.coolweather.android.db.City;
 import com.coolweather.android.db.County;
 import com.coolweather.android.db.Province;
+import com.coolweather.android.gson.Weather;
+import com.coolweather.android.log.LogUtil;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +23,7 @@ public class Utility {
      * @param response
      * @return
      */
-    public static boolean handleProvinceRespose(String response){
+    public static boolean handleProvinceResponse(String response){
         if (!TextUtils.isEmpty(response)){
             try {
                 JSONArray allProvinces = new JSONArray(response);
@@ -45,7 +48,7 @@ public class Utility {
      * @param provinceId
      * @return
      */
-    public static boolean handleCityRespose(String response,int provinceId){
+    public static boolean handleCityResponse(String response, int provinceId){
         if (!TextUtils.isEmpty(response)){
             try {
                 JSONArray allCities = new JSONArray(response);
@@ -64,12 +67,16 @@ public class Utility {
         }
         return false;
     }
-    public static boolean handleCountyRespose(String response,int cityId){
+    public static boolean handleCountyResponse(String response, int cityId){
+        LogUtil.loge("!TextUtils.isEmpty(response)",String.valueOf(!TextUtils.isEmpty(response)),true);
         if (!TextUtils.isEmpty(response)){
             try {
                 JSONArray allCounties = new JSONArray(response);
+                LogUtil.loge("len",allCounties.length(),true);
                 for (int i = 0; i < allCounties.length(); i++) {
                     JSONObject cityObj = allCounties.getJSONObject(i);
+                    LogUtil.loge("name",cityObj.getString("name"),true);
+                    LogUtil.loge("weather_id",cityObj.getString("weather_id"),true);
                     County county = new County();
                     county.setCountyName(cityObj.getString("name"));
                     county.setWeatherId(cityObj.getString("weather_id"));
@@ -82,5 +89,22 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    /**
+     * 将返回的 JSON 数据解析成 Weather 实体类
+     * @param response
+     * @return
+     */
+    public static Weather handleWeatherResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent,Weather.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
