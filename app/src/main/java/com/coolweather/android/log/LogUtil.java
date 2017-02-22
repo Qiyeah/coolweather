@@ -8,9 +8,8 @@ import android.util.Log;
 
 public class LogUtil {
     public static final String TAG = "LOG";
-    public static final int INVISIBLE = 1;
     public static void loge(String logName,Object log,boolean flag){
-        if (flag){
+        if (!flag){
             Log.e(TAG, logName+" : " +log);
         }
     }

@@ -1,5 +1,6 @@
 package com.coolweather.android;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -20,9 +21,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.coolweather.android.constants.APIConstants;
 import com.coolweather.android.gson.Forecast;
 import com.coolweather.android.gson.Weather;
 import com.coolweather.android.log.LogUtil;
+import com.coolweather.android.service.AutoUpdateService;
 import com.coolweather.android.util.HttpUtil;
 import com.coolweather.android.util.Utility;
 
@@ -38,7 +41,7 @@ import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
 
-    private static final String APIKEY = "e666567953cc46538b27b26c971a6fe8";
+
     private ScrollView weatherLayout;
 
     private TextView titleCity;
@@ -135,7 +138,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     public void requestWeather(String weatherId) {
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" +
-                weatherId + "&key=" + APIKEY;
+                weatherId + "&key=" + APIConstants.API_KEY;
         LogUtil.loge("weatherUrl", weatherUrl, true);
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -217,6 +220,9 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     private void initView() {
